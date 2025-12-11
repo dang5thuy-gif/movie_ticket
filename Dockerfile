@@ -5,10 +5,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Cài extensions PHP cho Laravel
 RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg-dev libfreetype6-dev zip unzip git \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql bcmath zip exif pcntl
-
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql bcmath zip exif pcntl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 # Set working directory
 WORKDIR /var/www/html
 
